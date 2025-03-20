@@ -8,9 +8,17 @@ function reload() {
 }
 
 async function fetchNews(query) {
-    const res = await fetch(`${url}${query}&apiKey=${API_KEY}`);
-    const data = await res.json();
-    bindData(data.articles);
+    try {
+        const res = await fetch(`${url}${query}&apiKey=${API_KEY}`);
+        if (!res.ok) {
+            throw new Error('Failed to fetch news');
+        }
+        const data = await res.json();
+        bindData(data.articles);
+    } catch (error) {
+        console.error(error);
+        alert('An error occurred while fetching news.');
+    }
 }
 
 function bindData(articles) {
@@ -52,7 +60,9 @@ let curSelectedNav = null;
 function onNavItemClick(id) {
     fetchNews(id);
     const navItem = document.getElementById(id);
-    curSelectedNav?.classList.remove("active");
+    if (curSelectedNav) {
+        curSelectedNav.classList.remove("active");
+    }
     curSelectedNav = navItem;
     curSelectedNav.classList.add("active");
 }
